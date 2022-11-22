@@ -19,12 +19,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Log {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id; 
-	
-	@Column(name="alteracao")
-	private String changes; 
+	private Long id;
+
+	@Column(name = "changes")
+	private String changes;
+
+	public Log(String changes) {
+		this.changes = changes;
+	}
 
 }

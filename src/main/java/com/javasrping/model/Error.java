@@ -23,7 +23,7 @@ public class Error {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id; 
 	
-	@Column(name="message")
+	@Column(name="error")
 	private String errorMessage; 
 	
 
