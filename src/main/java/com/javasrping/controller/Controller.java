@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.javasrping.dto.SmsDTO;
+import com.javasrping.dto.TorpedoDTO;
 import com.javasrping.dto.UserDTO;
 import com.javasrping.model.User;
 import com.javasrping.service.NvoipApiService;
@@ -130,6 +131,21 @@ public class Controller {
 			return ResponseEntity.badRequest().body("Error to send sms" + ", " + e.getMessage());
 		}
 
+	}
+	
+	@PostMapping("/torpedo")
+	public ResponseEntity<?> sendTorpedo (@RequestParam String numbersip, @RequestBody TorpedoDTO dto) throws Exception{
+		
+		User requestUser = new User(this.userService.getUserByNumberSip(numbersip));
+		
+		try {
+			this.nvoipApiService.sendTorpedo(dto);
+			this.userService.addLog("send_torpedo", requestUser);
+			return ResponseEntity.ok().body("Torpedo sended : "+dto);
+		}catch (Exception e) {
+			userService.addError("send_torpedo", requestUser);
+			return ResponseEntity.badRequest().body("Error to send torpedo" + ", " + e.getMessage());
+		}
 	}
 
 }
