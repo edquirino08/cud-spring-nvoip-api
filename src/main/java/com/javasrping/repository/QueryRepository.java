@@ -12,6 +12,8 @@ public interface QueryRepository extends JpaRepository<User, Long> {
 	
 	User findIdBynumbersip(String numbersip);
 	
+	User deleteBynumbersip(String numbersip);
+	
 }
 
 

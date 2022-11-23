@@ -16,33 +16,17 @@ public class UserService extends BaseService {
 	@Autowired
 	UserRepository userRepository;
 
-	public UserDTO saveUser(UserDTO dto) {
+	public User saveUser(UserDTO dto) {
+
+		User user = new User();
 
 		if (checkNumber(dto.getTelephone()) && checkNumberSip(dto.getNumbersip())) {
 
-			User user = new User(dto.getName(), dto.getNumbersip(), dto.getUserToken(), dto.getTelephone());
+			user = new User(dto.getName(), dto.getNumbersip(), dto.getUserToken(), dto.getTelephone());
 			userRepository.save(user);
 		}
 
-		return dto;
-	}
-
-	private boolean checkNumber(String number) {
-
-		if (number.length() == 11 || number.length() == 10 && (number.matches("[0-9]+")))
-			return true;
-
-		return false;
-
-	}
-
-	private boolean checkNumberSip(String numbersip) {
-
-		if (numbersip.length() == 8 && numbersip.matches("[0-9]+"))
-			return true;
-
-		return false;
-
+		return user;
 	}
 
 	public List<UserDTO> listAllUsers() {
@@ -67,6 +51,34 @@ public class UserService extends BaseService {
 
 		return new UserDTO(user.getName(), user.getNumbersip(), user.getUserToken(), user.getTelephone());
 
+	}
+
+	public UserDTO updateUser(UserDTO dto) {
+
+		User editedUser = queryRepository.findBynumbersip(dto.getNumbersip());
+
+		if (dto.getName() != null || dto.getName() != "")
+			editedUser.setName(dto.getName());
+
+		if (dto.getUserToken() != null || dto.getUserToken() != "")
+			editedUser.setUserToken(dto.getUserToken());
+
+		if (dto.getTelephone() != null || dto.getTelephone() != "")
+			editedUser.setUserToken(dto.getTelephone());
+
+		return dto;
+
+	}
+
+	public UserDTO deleteUser(String numbersip) {
+
+		User user = new User(queryRepository.findBynumbersip(numbersip));
+
+		UserDTO dto = new UserDTO(user.getName(), user.getNumbersip(), user.getUserToken(), user.getTelephone());
+
+		queryRepository.deleteBynumbersip(numbersip);
+
+		return dto;
 	}
 
 }

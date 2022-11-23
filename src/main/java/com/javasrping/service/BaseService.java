@@ -29,5 +29,23 @@ public class BaseService {
 
 		return new User(queryRepository.findBynumbersip(numbersip));
 	}
+	
+	public boolean checkNumber(String number) {
+
+		if (number.length() == 11 || number.length() == 10 && (number.matches("[0-9]+")))
+			return true;
+
+		return false;
+
+	}
+
+	public boolean checkNumberSip(String numbersip) {
+
+		if (numbersip.length() == 8 && numbersip.matches("[0-9]+"))
+			return true;
+
+		return false;
+
+	}
 
 }
