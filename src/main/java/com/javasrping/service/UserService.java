@@ -16,7 +16,7 @@ public class UserService extends BaseService {
 	@Autowired
 	UserRepository userRepository;
 
-	public User saveUser(UserDTO dto) {
+	public User saveUser(UserDTO dto) throws Exception {
 
 		User user = new User();
 

@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.javasrping.dto.SmsDTO;
 import com.javasrping.dto.UserDTO;
 import com.javasrping.model.User;
-import com.javasrping.service.ErrorService;
-import com.javasrping.service.LogService;
 import com.javasrping.service.NvoipApiService;
 import com.javasrping.service.UserService;
 
@@ -28,12 +26,9 @@ public class Controller {
 
 	@Autowired
 	private UserService userService;
+
 	@Autowired
-	private LogService logService;
-	@Autowired
-	private ErrorService errorService;
-	@Autowired
-	private NvoipApiService nvoipApiService; 
+	private NvoipApiService nvoipApiService;
 
 	@PostMapping
 	public ResponseEntity<?> saveUser(@RequestBody UserDTO dto) throws Exception {
@@ -41,10 +36,10 @@ public class Controller {
 		User requestUser = new User();
 		try {
 			requestUser = this.userService.saveUser(dto);
-			this.logService.addLog("save_new_user", requestUser);
+			this.userService.addLog("save_new_user", requestUser);
 			return ResponseEntity.ok().body(dto);
 		} catch (Exception e) {
-			errorService.addError("save_new_user", requestUser);
+			userService.addError("save_new_user", requestUser);
 			return ResponseEntity.badRequest().body("Error to create user: " + dto.getName() + " ," + e.getMessage());
 		}
 	}
@@ -57,10 +52,10 @@ public class Controller {
 		try {
 
 			List<UserDTO> users = this.userService.listAllUsers();
-			this.logService.addLog("list_all_users", requestUser);
+			this.userService.addLog("list_all_users", requestUser);
 			return ResponseEntity.ok().body(users);
 		} catch (Exception e) {
-			errorService.addError("list_all_users", requestUser);
+			userService.addError("list_all_users", requestUser);
 			return ResponseEntity.badRequest().body("Error to list all users: " + e.getMessage());
 		}
 
@@ -74,10 +69,10 @@ public class Controller {
 		try {
 
 			UserDTO dto = this.userService.listUserById(id);
-			this.logService.addLog("list_user_by_id", requestUser);
+			this.userService.addLog("list_user_by_id", requestUser);
 			return ResponseEntity.ok().body(dto);
 		} catch (Exception e) {
-			errorService.addError("list_user_by_id", requestUser);
+			userService.addError("list_user_by_id", requestUser);
 			return ResponseEntity.badRequest().body("Error to list user by id:  " + e.getMessage());
 
 		}
@@ -91,10 +86,10 @@ public class Controller {
 
 		try {
 			UserDTO dto = this.userService.updateUser(userDto);
-			this.logService.addLog("update_user", requestUser);
+			this.userService.addLog("update_user", requestUser);
 			return ResponseEntity.ok().body(dto);
 		} catch (Exception e) {
-			errorService.addError("update_user", requestUser);
+			userService.addError("update_user", requestUser);
 			return ResponseEntity.badRequest()
 					.body("Error to update user: " + userDto.getNumbersip() + " , " + e.getMessage());
 
@@ -111,11 +106,11 @@ public class Controller {
 		try {
 
 			UserDTO dto = this.userService.deleteUser(deleteNumbersip);
-			this.logService.addLog("delete_user", requestUser);
+			this.userService.addLog("delete_user", requestUser);
 			return ResponseEntity.ok().body("Deleted user: " + dto);
 		} catch (Exception e) {
 
-			errorService.addError("delete_user", requestUser);
+			userService.addError("delete_user", requestUser);
 			return ResponseEntity.badRequest().body("Error to delete users" + ", " + e.getMessage());
 		}
 
@@ -126,15 +121,15 @@ public class Controller {
 
 		User requestUser = new User(this.userService.getUserByNumberSip(numbersip));
 		try {
-			
-			this.nvoipApiService.sendSMS()
 
+			this.nvoipApiService.sendSMS(dto);
+			this.userService.addLog("send_sms", requestUser);
+			return ResponseEntity.ok().body("SMS sended: " + dto);
 		} catch (Exception e) {
-			errorService.addError("send_sms", requestUser);
+			userService.addError("send_sms", requestUser);
 			return ResponseEntity.badRequest().body("Error to send sms" + ", " + e.getMessage());
 		}
 
-		return null;
 	}
 
 }
