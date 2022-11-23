@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.javasrping.dto.SmsDTO;
 import com.javasrping.dto.UserDTO;
 import com.javasrping.model.User;
 import com.javasrping.service.ErrorService;
 import com.javasrping.service.LogService;
+import com.javasrping.service.NvoipApiService;
 import com.javasrping.service.UserService;
 
 @RestController
@@ -30,6 +32,8 @@ public class Controller {
 	private LogService logService;
 	@Autowired
 	private ErrorService errorService;
+	@Autowired
+	private NvoipApiService nvoipApiService; 
 
 	@PostMapping
 	public ResponseEntity<?> saveUser(@RequestBody UserDTO dto) throws Exception {
@@ -115,6 +119,22 @@ public class Controller {
 			return ResponseEntity.badRequest().body("Error to delete users" + ", " + e.getMessage());
 		}
 
+	}
+
+	@PostMapping("/sms")
+	public ResponseEntity<?> sendSMS(@RequestParam String numbersip, @RequestBody SmsDTO dto) throws Exception {
+
+		User requestUser = new User(this.userService.getUserByNumberSip(numbersip));
+		try {
+			
+			this.nvoipApiService.sendSMS()
+
+		} catch (Exception e) {
+			errorService.addError("send_sms", requestUser);
+			return ResponseEntity.badRequest().body("Error to send sms" + ", " + e.getMessage());
+		}
+
+		return null;
 	}
 
 }

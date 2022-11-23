@@ -4,17 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.javasrping.model.User;
-import com.javasrping.repository.QueryRepository;
+import com.javasrping.repository.UserRepository;
 
 @Service
 public class BaseService {
 
 	@Autowired
-	QueryRepository queryRepository;
+	UserRepository userRepository;
 
 	private boolean checkUser(String numbersip) throws Exception {
 
-		if (queryRepository.findBynumbersip(numbersip) == null) {
+		if (userRepository.findBynumbersip(numbersip) == null) {
 
 			throw new Exception("Error! user who made the request not found");
 		}
@@ -27,24 +27,24 @@ public class BaseService {
 
 		if (checkUser(numbersip));
 
-		return new User(queryRepository.findBynumbersip(numbersip));
+		return new User(userRepository.findBynumbersip(numbersip));
 	}
 	
-	public boolean checkNumber(String number) {
+	public boolean checkNumber(String number) throws Exception {
 
 		if (number.length() == 11 || number.length() == 10 && (number.matches("[0-9]+")))
 			return true;
 
-		return false;
+		throw new Exception("Error! invalid number");
 
 	}
 
-	public boolean checkNumberSip(String numbersip) {
+	public boolean checkNumberSip(String numbersip) throws Exception {
 
 		if (numbersip.length() == 8 && numbersip.matches("[0-9]+"))
 			return true;
 
-		return false;
+		throw new Exception("Error! invalid number");
 
 	}
 

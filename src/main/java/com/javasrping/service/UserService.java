@@ -55,7 +55,7 @@ public class UserService extends BaseService {
 
 	public UserDTO updateUser(UserDTO dto) {
 
-		User editedUser = queryRepository.findBynumbersip(dto.getNumbersip());
+		User editedUser = userRepository.findBynumbersip(dto.getNumbersip());
 
 		if (dto.getName() != null || dto.getName() != "")
 			editedUser.setName(dto.getName());
@@ -72,11 +72,11 @@ public class UserService extends BaseService {
 
 	public UserDTO deleteUser(String numbersip) {
 
-		User user = new User(queryRepository.findBynumbersip(numbersip));
+		User user = new User(userRepository.findBynumbersip(numbersip));
 
 		UserDTO dto = new UserDTO(user.getName(), user.getNumbersip(), user.getUserToken(), user.getTelephone());
 
-		queryRepository.deleteBynumbersip(numbersip);
+		userRepository.deleteBynumbersip(numbersip);
 
 		return dto;
 	}

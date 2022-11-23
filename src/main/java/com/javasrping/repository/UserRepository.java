@@ -6,7 +6,12 @@ import org.springframework.stereotype.Repository;
 import com.javasrping.model.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<User, Long> {
+
+	User findBynumbersip(String numbersip);
+
+	User findIdBynumbersip(String numbersip);
+
+	User deleteBynumbersip(String numbersip);
 
 }
-

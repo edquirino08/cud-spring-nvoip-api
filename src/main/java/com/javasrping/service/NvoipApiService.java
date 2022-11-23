@@ -5,11 +5,18 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.javasrping.dto.SmsDTO;
+import com.javasrping.dto.TorpedoDTO;
+import com.javasrping.model.Sms;
+import com.javasrping.model.Torpedo;
 import com.javasrping.model.User;
+import com.javasrping.repository.SmsRepository;
+import com.javasrping.repository.TorpedoRepository;
 import com.javasrping.repository.UserRepository;
 
 @Service
@@ -18,9 +25,18 @@ public class NvoipApiService extends BaseService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void sendSMS(Long id) throws Exception {
+	@Autowired
+	private SmsRepository smsRepository;
 
-		String telefone = userRepository.findById(id).get().getTelephone();
+	@Autowired
+	private TorpedoRepository torpedoRepository;
+
+	public void sendSMS(SmsDTO smsDTO) throws Exception {
+
+		if (this.checkNumber(smsDTO.getDestiny()))
+			;
+
+		Sms sms = new Sms(smsDTO.getMessage(), smsDTO.getSender(), smsDTO.getDestiny());
 
 		try {
 			String url = "https://api.nvoip.com.br/v2/sms?napikey=MFlIWlFMVWNuVTJNNThQbk1DaFRJMG5nRzVPNjlTQkw=";
@@ -29,12 +45,12 @@ public class NvoipApiService extends BaseService {
 			var client = HttpClient.newHttpClient();
 			var body = HttpRequest.BodyPublishers
 					.ofString("{\r\n" + "    \"message\":\"mensagem teste teste devs\",\r\n" + "    \"numberPhone\":\" "
-							+ telefone + "\"\r\n" + "}");
+							+ sms.getDestiny() + "\"\r\n" + "}");
 			HttpRequest request = HttpRequest.newBuilder(endereco).POST(body).header("Content-Type", "application/json")
 					.build();
 
 			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-
+			this.smsRepository.save(sms);
 			System.out.println(response.toString());
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -42,27 +58,29 @@ public class NvoipApiService extends BaseService {
 
 	}
 
-	public void sendTorpedo(User user) {
+	public void sendTorpedo(TorpedoDTO torpedoDTO) throws Exception {
 
-		String telefone = userRepository.findById(user.getId()).get().getTelephone();
-		
-		String accessToken = getAccessTokenNvoip(user);
+		if (this.checkNumber(torpedoDTO.getDestiny()))
+			;
+
+		Torpedo torpedo = new Torpedo(torpedoDTO.getMessage(), torpedoDTO.getSender(), torpedoDTO.getDestiny());
+
+		String accessToken = getAccessTokenNvoip(userRepository.findBynumbersip(torpedoDTO.getSender()));
 
 		try {
 			String url = "https://api.nvoip.com.br/v2/torpedo/voice";
 			URI endereco = URI.create(url);
 
 			var client = HttpClient.newHttpClient();
-			var body = HttpRequest.BodyPublishers.ofString("{\"caller\":\""+user.getNumbersip()+"\",\r\n       \"called\":\""
-					+ telefone
-					+ "\",\r\n   \"audios\":[\r\n  {\r\n     \"audio\":\"Este é um teste de áudio, por favor ignore.\",\r\n"
-					+ "   \"positionAudio\":1\r\n  }\r\n       ],\r\n       \"dtmfs\":[]\r\n  } ");
+			var body = HttpRequest.BodyPublishers.ofString(
+					"{\"caller\":\"" + torpedoDTO.getSender() + "\",\r\n       \"called\":\"" + torpedoDTO.getDestiny()
+							+ "\",\r\n   \"audios\":[\r\n  {\r\n     \"audio\":" + torpedoDTO.getMessage() + ",\r\n"
+							+ "   \"positionAudio\":1\r\n  }\r\n       ],\r\n       \"dtmfs\":[]\r\n  } ");
 			HttpRequest request = HttpRequest.newBuilder(endereco).POST(body).header("Content-Type", "application/json")
-					.header("Authorization",
-							"Bearer "+accessToken)
-					.build();
+					.header("Authorization", "Bearer " + accessToken).build();
 
 			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			this.torpedoRepository.save(torpedo);
 
 			System.out.println(response.toString());
 		} catch (Exception e) {
@@ -95,8 +113,7 @@ public class NvoipApiService extends BaseService {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		
-		
+
 		return getTokenByJson(response.body().toString());
 	}
 
