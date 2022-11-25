@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,12 +82,12 @@ public class Controller {
 	}
 
 	@PutMapping
-	public ResponseEntity<?> updateUser(@RequestParam String numbersip, @RequestBody UserDTO userDto) throws Exception {
+	public ResponseEntity<?> updateUser(@RequestParam String numbersip, @RequestBody UserDTO userDto, @RequestHeader String numberSip) throws Exception {
 
 		User requestUser = new User(this.userService.getUserByNumberSip(numbersip));
 
 		try {
-			UserDTO dto = this.userService.updateUser(userDto);
+			UserDTO dto = this.userService.updateUser(userDto,numberSip);
 			this.userService.addLog("update_user", requestUser);
 			return ResponseEntity.ok().body(dto);
 		} catch (Exception e) {

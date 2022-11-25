@@ -44,7 +44,7 @@ public class NvoipApiService extends BaseService {
 
 			var client = HttpClient.newHttpClient();
 			var body = HttpRequest.BodyPublishers
-					.ofString("{\r\n" + "    \"message\":\"mensagem teste teste devs\",\r\n" + "    \"numberPhone\":\" "
+					.ofString("{\r\n" + "    \"message\":\""+smsDTO.getMessage()+"\",\r\n" + "    \"numberPhone\":\" "
 							+ sms.getDestiny() + "\"\r\n" + "}");
 			HttpRequest request = HttpRequest.newBuilder(endereco).POST(body).header("Content-Type", "application/json")
 					.build();

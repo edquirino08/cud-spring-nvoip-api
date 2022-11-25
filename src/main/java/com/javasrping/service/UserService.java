@@ -53,9 +53,9 @@ public class UserService extends BaseService {
 
 	}
 
-	public UserDTO updateUser(UserDTO dto) {
+	public UserDTO updateUser(UserDTO dto , String numbersip) {
 
-		User editedUser = userRepository.findBynumbersip(dto.getNumbersip());
+		User editedUser = userRepository.findBynumbersip(numbersip);
 
 		if (dto.getName() != null || dto.getName() != "")
 			editedUser.setName(dto.getName());
@@ -64,7 +64,7 @@ public class UserService extends BaseService {
 			editedUser.setUserToken(dto.getUserToken());
 
 		if (dto.getTelephone() != null || dto.getTelephone() != "")
-			editedUser.setUserToken(dto.getTelephone());
+			editedUser.setTelephone(dto.getTelephone());
 
 		return dto;
 
